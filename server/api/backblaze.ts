@@ -1,4 +1,4 @@
-import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, GetObjectCommand, ListObjectsCommand } from '@aws-sdk/client-s3';
 
 export default defineEventHandler( async (event) => {
     // let photoData: {key: string, url: string}[] = []
@@ -15,9 +15,11 @@ export default defineEventHandler( async (event) => {
     const params = { Bucket: 'inqwellMediaStorage' };
 
     try {
-        const data = await s3.send(new ListObjectsV2Command(params));
+        const data = await s3.send(new ListObjectsCommand(params));
 
         // Extract photo URLs from the fetched data
+        //const stuff = data.map((c) => c.keys);
+        //console.log(stuff)
         const photoData = data.Contents.map(async (object) => {
             
             /*console.log(object)
@@ -46,10 +48,14 @@ export default defineEventHandler( async (event) => {
             //const objectString = response.Body.reduce((a, b) => {a + String.fromCharCode(b) }, "");
             //const objectData = btoa(objectString).replace(/.{76}(?=.)/g, '$&\n');
             const objectData = await response.Body?.transformToString("base64");
-            console.log(response.Body?.transformToString("base64"))
+            console.log(object.Key)
+            const objectString = "data:image/jpeg/png;base64,".concat(objectData)
+            // this console.log needs to have the identifier at the beginning
+            console.log(objectString.substring(0,100))
             return {
                 key: object.Key,
-                data: objectData
+                //data: "data:image/jpeg/png;base64,".concat(objectData)
+                data: objectString
             };
         });
         return photoData
