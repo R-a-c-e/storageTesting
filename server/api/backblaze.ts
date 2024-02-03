@@ -1,4 +1,4 @@
-import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 
 export default defineEventHandler( async (event) => {
     // let photoData: {key: string, url: string}[] = []
@@ -20,7 +20,7 @@ export default defineEventHandler( async (event) => {
         // Extract photo URLs from the fetched data
         const photoData = data.Contents.map(async (object) => {
             
-            console.log(object)
+            /*console.log(object)
             const blob = await $fetch(`${"https://s3.us-west-004.backblazeb2.com"}/${object.Key}`, {
                 headers: {
 
@@ -32,7 +32,25 @@ export default defineEventHandler( async (event) => {
             return { 
                 key: object.Key,
                 data: buffer,
+            }*/
+            // Command Parameters
+            const objectParams = {
+                Bucket: 'inqwellMediaStorage',
+                Key: object.Key
             }
+            console.log(objectParams)
+            // Send the request to S3
+            const response = await s3.send(new GetObjectCommand(objectParams));
+            //console.log(response.Body)
+            // Transform the data into data we can use on the site. We may be able to switch this to the blob stuff, but this is from the stackoverflow post.
+            //const objectString = response.Body.reduce((a, b) => {a + String.fromCharCode(b) }, "");
+            //const objectData = btoa(objectString).replace(/.{76}(?=.)/g, '$&\n');
+            const objectData = await response.Body?.transformToString("base64");
+            console.log(response.Body?.transformToString("base64"))
+            return {
+                key: object.Key,
+                data: objectData
+            };
         });
         return photoData
     } catch (error) {

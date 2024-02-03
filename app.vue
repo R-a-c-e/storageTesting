@@ -5,8 +5,6 @@ const supabase = createClient('https://miywuatqunvtxjmwxlbk.supabase.co/', 'eyJh
 const supaData = ref([])
 const photoData = ref([])
 
-const {data} = await useFetch('/api/backblaze')
-
 async function getData() {
   const { data } = await supabase.from('dev_journals').select('id, title')
   supaData.value = data
@@ -40,8 +38,9 @@ async function getData() {
   }*/
 }
 
-onMounted(() => {
+onMounted( async () => {
   getData()
+  photoData.value = await useFetch('/api/backblaze')
 })
 </script>
 
@@ -51,10 +50,10 @@ onMounted(() => {
     <ul>
       <li v-for="journal in supaData" :key="journal.id">{{ journal.title }}</li>
     </ul>
-    <span>{{ data }}</span>
+    <span>{{ photoData }}</span>
     <h2>Photos from inqwellMediaStorage Bucket</h2>
-    <div v-for="photo in photoData" :key="photo.key">
-      <img :src="photo.url" alt="Photo">
+    <div v-for="photo in photoData.value" :key="photo.key">
+      <img :src="photo.data" alt="Photo">
     </div>
   </div>
 </template>
