@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     try {
         let command = new ListObjectsCommand({ Bucket: runtimeConfig.AWS_S3_BUCKET_NAME });
         data = await s3.send(command);
-        // console.log("Data:", data);
+        //console.log("Data:", data.Contents?.length);
     } catch (error) {
         console.error('Error running ListObjectsCommand:', error);
         return { 'error': 'unable to fetch s3 objects' }
@@ -28,16 +28,18 @@ export default defineEventHandler(async (event) => {
     //console.log(stuff)
 
     // Get first 5
-    const shortList = data.Contents?.slice(0, 5);
+    const numPhotos = data.Contents?.length
+    const shortList = data.Contents?.slice(0, numPhotos);
     const photoData = shortList.map(async (object) => {
-        if (object.Key.split(".").pop() !== "png" && object.Key.split(".").pop() !== "jpg") {
+        //console.log(object)
+        if (object.Key.split(".").pop() !== "png" && object.Key.split(".").pop() !== "jpg" &&  object.Key.split(".").pop() !== "jpeg") {
             return;
         }
 
         let command = new GetObjectCommand({ Bucket: runtimeConfig.AWS_S3_BUCKET_NAME, Key: object.Key });
         let res = await s3.send(command);
         let imageData = "data:image/" + object.Key?.split(".").pop() + ";base64," + await res.Body?.transformToString("base64");
-
+        //console.log(imageData)
         return { key: object.Key, url: imageData };
     });
 
