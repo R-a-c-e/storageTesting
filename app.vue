@@ -1,4 +1,12 @@
 <template>
+	<div class="drag-drop-container">
+		<div class="drag-drop">
+			<div class="drag-drop-content">
+				<div class="plus">+</div>
+				<div class="text">Drag and Drop</div>
+			</div>
+		</div>
+  	</div>
 	<div class="container">
 		<div class="modern-heading">
 			<h2>Photos from inqwellMediaStorage Bucket</h2>
@@ -75,5 +83,35 @@ onMounted(async () => {
   color: #333; /* Set the text color */
   /* Add additional styles for a modern look */
   /* For example, you can add font-family, text-transform, letter-spacing, etc. */
+}
+
+.drag-drop-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* Adjust the height as needed */
+}
+
+.drag-drop {
+  width: 500px; /* Adjust the width as needed */
+  height: 300px; /* Adjust the height as needed */
+  border: 2px dashed #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.drag-drop-content {
+  text-align: center;
+}
+
+.plus {
+  font-size: 60px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.text {
+  font-size: 18px;
 }
 </style>
